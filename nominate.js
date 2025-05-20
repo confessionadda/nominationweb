@@ -1,7 +1,11 @@
 const form = document.getElementById("nominationForm");
+const submitBtn = form.querySelector('button[type="submit"]');
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
 
   const username = document.getElementById("username").value.trim();
   const year = document.getElementById("year").value;
@@ -9,6 +13,8 @@ form.addEventListener("submit", async (e) => {
 
   if (!username || !year || !branch) {
     alert("Please fill all fields correctly!");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit";
     return;
   }
 
@@ -19,13 +25,15 @@ form.addEventListener("submit", async (e) => {
 
     if (!querySnapshot.empty) {
       alert("❌ Ye banda already nominate ho chuka hai!");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
       return;
     }
 
     await db.collection("nominations").add({
       username,
       year,
-      branch,
+     branch,
       votes: 0
     });
 
@@ -35,4 +43,8 @@ form.addEventListener("submit", async (e) => {
     console.error("Error adding nomination: ", error);
     alert("Something went wrong. Check Firebase setup.");
   }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Submit";
 });
+
