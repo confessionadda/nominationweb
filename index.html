@@ -17,7 +17,7 @@
         <option>FY</option>
         <option>SY</option>
         <option>TY</option>
-        <option>FINAL</option>
+        <option>BTECH</option>
       </select>
       <select id="branch" required>
         <option value="">Branch</option>
@@ -26,6 +26,7 @@
         <option>ENTC</option>
         <option>ECE</option>
         <option>INSTRU</option>
+          <option>MECH</option>
         <option>PROD</option>
         <option>TEXT</option>
         <option>CIVIL</option>
@@ -44,37 +45,5 @@
     <div class="container">
       <!-- Yahan tera form ya content hoga -->
     </div>
-  
-    <script>
-      function createSnowflake() {
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
-        
-        // Random size between 2px and 6px
-        const size = Math.random() * 4 + 2 + 'px';
-        snowflake.style.width = size;
-        snowflake.style.height = size;
-        
-        // Random horizontal position across the screen
-        snowflake.style.left = Math.random() * window.innerWidth + 'px';
-        
-        // Random animation duration between 5s and 15s
-        const duration = Math.random() * 10 + 5;
-        snowflake.style.animationDuration = duration + 's';
-        
-        // Random animation delay so they don't all start at once
-        snowflake.style.animationDelay = Math.random() * 15 + 's';
-        
-        document.body.appendChild(snowflake);
-        
-        // Remove snowflake after animation duration ends
-        setTimeout(() => {
-          snowflake.remove();
-        }, duration * 1000);
-      }
-  
-      // Create 10 snowflakes every second (100 ms gap)
-      setInterval(createSnowflake, 100);
-    </script>
   </body>
 </html>
