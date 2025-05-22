@@ -1,54 +1,51 @@
-// Nomination form submit handler
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('nominationForm');
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const username = document.getElementById('username').value.trim();
+    const username = document.getElementById('username').value.trim().toLowerCase();
     const year = document.getElementById('year').value.trim();
     const branch = document.getElementById('branch').value.trim();
-
-    const game = 'crushgirls'; // Change this as needed
+    const game = 'crushgirls';
 
     if (!username || !year || !branch) {
       alert('Please fill in all fields!');
       return;
     }
 
-    // 🔍 Check if user already nominated for this game
-    db.collection('nominations')
-      .where('username', '==', username)
-      .where('game', '==', game)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          alert('❌ This username has already been nominated for this game.');
-          return;
-        }
+    const docId = `${game}_${username}`;
 
-        // ✅ Add nomination if not already nominated
-        return db.collection('nominations').add({
-          username: username,
-          year: year,
-          branch: branch,
-          votes: 0,
-          game: game,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      })
-      .then((docRef) => {
-        if (docRef) {
-          alert('✅ Nomination submitted successfully!');
-          form.reset();
-        }
-      })
-      .catch((error) => {
-        console.error('Error submitting nomination:', error);
-        alert('Something went wrong. Please try again.');
+    const docRef = db.collection('nominations').doc(docId);
+
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        alert('❌ This user has already been nominated for this game.');
+        return;
+      }
+
+      return docRef.set({
+        username,
+        year,
+        branch,
+        votes: 0,
+        game,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+    })
+    .then((res) => {
+      if (res !== undefined) {
+        alert('✅ Nomination submitted successfully!');
+        form.reset();
+      }
+    })
+    .catch((error) => {
+      console.error('❌ Error submitting nomination:', error);
+      alert('Something went wrong. Check console and Firestore rules.');
+    });
   });
 });
+
 
 
 
