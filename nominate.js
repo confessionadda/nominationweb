@@ -1,47 +1,55 @@
-// nomination.js
+// Nomination form submit handler
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('nominationForm');
 
-const gameName = 'crushgirls'; // Change as needed
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-document.getElementById('nominateForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const year = document.getElementById('year').value.trim();
+    const branch = document.getElementById('branch').value.trim();
 
-  const username = document.getElementById('username').value.trim();
-  const year = document.getElementById('year').value;
-  const branch = document.getElementById('branch').value;
+    const game = 'crushgirls'; // Change this as needed
 
-  if (!username || !year || !branch) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  try {
-    // 🔍 Check if this username already exists in nominations for this game
-    const snapshot = await db.collection('nominations')
-      .where('username', '==', username)
-      .where('game', '==', gameName)
-      .get();
-
-    if (!snapshot.empty) {
-      alert("❌ This username is already nominated for this game.");
+    if (!username || !year || !branch) {
+      alert('Please fill in all fields!');
       return;
     }
 
-    // ✅ Add new nomination
-    await db.collection('nominations').add({
-      username,
-      year,
-      branch,
-      votes: 0,
-      game: gameName
-    });
+    // 🔍 Check if user already nominated for this game
+    db.collection('nominations')
+      .where('username', '==', username)
+      .where('game', '==', game)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          alert('❌ This username has already been nominated for this game.');
+          return;
+        }
 
-    alert("✅ Nomination submitted successfully!");
-    document.getElementById('nominateForm').reset();
-  } catch (error) {
-    console.error("Error nominating:", error);
-    alert("⚠️ Error submitting nomination. Please try again.");
-  }
+        // ✅ Add nomination if not already nominated
+        return db.collection('nominations').add({
+          username: username,
+          year: year,
+          branch: branch,
+          votes: 0,
+          game: game,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then((docRef) => {
+        if (docRef) {
+          alert('✅ Nomination submitted successfully!');
+          form.reset();
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting nomination:', error);
+        alert('Something went wrong. Please try again.');
+      });
+  });
 });
+
 
 
 
