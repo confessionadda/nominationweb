@@ -1,50 +1,42 @@
-const form = document.getElementById("nominationForm");
-const submitBtn = form.querySelector('button[type="submit"]');
+// Game name for this nomination page
+const gameName = 'crushgirls'; // <-- change as needed per game
 
-form.addEventListener("submit", async (e) => {
+// Firebase setup
+const firebaseConfig = {
+  // your firebase config here
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Form submit
+document.getElementById('nominationForm').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Submitting...";
-
-  const username = document.getElementById("username").value.trim();
-  const year = document.getElementById("year").value;
-  const branch = document.getElementById("branch").value;
+  const username = document.getElementById('username').value.trim();
+  const year = document.getElementById('year').value.trim();
+  const branch = document.getElementById('branch').value.trim();
 
   if (!username || !year || !branch) {
-    alert("Please fill all fields correctly!");
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Submit";
+    alert("Please fill all fields.");
     return;
   }
 
-  try {
-    const querySnapshot = await db.collection("nominations")
-      .where("username", "==", username)
-      .get();
-
-    if (!querySnapshot.empty) {
-      alert("❌ Ye banda already nominate ho chuka hai!");
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit";
-      return;
-    }
-
-    await db.collection("nominations").add({
-      username,
-      year,
-     branch,
-      votes: 0
-    });
-
-    alert("✅ Nomination submitted successfully!");
-    form.reset();
-  } catch (error) {
-    console.error("Error adding nomination: ", error);
-    alert("Something went wrong. Check Firebase setup.");
-  }
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "Submit";
+  db.collection('nominations').add({
+    username: username,
+    year: year,
+    branch: branch,
+    votes: 0,
+    game: gameName, // ✅ VERY IMPORTANT
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(() => {
+    alert("Nomination submitted!");
+    document.getElementById('nominationForm').reset();
+  })
+  .catch((error) => {
+    console.error("Error submitting nomination: ", error);
+    alert("Error submitting. Please try again.");
+  });
 });
+
 
