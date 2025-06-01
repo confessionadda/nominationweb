@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const username = usernameInput.value.trim().toLowerCase();
     const year = yearInput.value.trim();
     const branch = branchInput.value.trim();
-    const game = 'crushgirls';
+    const game = 'crushboys';
 
     // Basic validation
     if (!username || !year || !branch) {
